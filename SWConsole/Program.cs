@@ -86,7 +86,9 @@ class Program
                 case var key when key == ConsoleKey.E:
                     await gameActions.Rotate30RightAsync();
                     break;
-                
+                case var key when key == ConsoleKey.X:
+                    await gameActions.FastForwardAsync();
+                    break;
                 case var key when key == fireKey:
                     await gameActions.FireWeaponAsync();
                     break;
