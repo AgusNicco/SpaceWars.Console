@@ -20,6 +20,9 @@ public class GameActions
 
     public async Task RotateRightAsync(bool quickTurn) => await rotate(Direction.Right, quickTurn);
 
+    public async Task Rotate30LeftAsync() => await rotate30(Direction.Left);
+    public async Task Rotate30RightAsync() => await rotate30(Direction.Right);
+
     private async Task rotate(Direction direction, bool quickTurn)
     {
         heading = (direction, quickTurn) switch
@@ -28,6 +31,18 @@ public class GameActions
             (Direction.Right, false) => heading + 1,
             (Direction.Left, true) => heading - 10,
             (Direction.Left, false) => heading - 1,
+            _ => 0,//turn north if someone calls this with a bogus Direction
+        };
+        heading = ClampRotation(heading);
+        await apiService.QueueAction([new("changeHeading", heading.ToString())]);
+    }
+
+    private async Task rotate30(Direction direction)
+    {
+        heading = (direction) switch
+        {
+            (Direction.Right) => heading + 30,
+            (Direction.Left) => heading - 30,
             _ => 0,//turn north if someone calls this with a bogus Direction
         };
         heading = ClampRotation(heading);
