@@ -220,7 +220,7 @@ class Program
         }
     }
 
-    public static void DisplayClustersMatrix(IEnumerable<Location> playerLocations)
+    public static void DisplayClustersMatrix(IEnumerable<Location>   playerLocations)
     {
         int mapSize = 500;
         int quadrantSize = mapSize / 3;
