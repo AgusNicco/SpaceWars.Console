@@ -7,6 +7,11 @@ class Program
 {
     public static Location myLocation { get; set; }
     public static int myHeading { get; set; }
+
+    public static int mapSize { get; set; }
+    public static int nearestNeighbors { get; set; }
+    public static int nearestClust { get; set; }
+    
     static async Task Main(string[] args)
     {
         //**************************************************************************************
@@ -36,6 +41,13 @@ class Program
 
         Console.WriteLine("Please enter your name");
         var username = Console.ReadLine();
+        Console.WriteLine($"Enter the number of nearest neighbors you want displayed:");
+        nearestNeighbors = int.Parse(Console.ReadLine());
+        Console.WriteLine($"Enter the number of nearest neighbors used for calculation of centroid and clusters");
+        nearestClust = int.Parse(Console.ReadLine());
+        Console.WriteLine($"Enter the size of the map (10-100)");
+        mapSize = int.Parse(Console.ReadLine());
+
         try
         {
             joinGameResponse = await service.JoinGameAsync(username);
@@ -196,7 +208,7 @@ class Program
             DisplayClustersMatrix(nearestPlayers);
             DisplayMap(nearestPlayers, myLocation, safestLocation);
             Console.WriteLine("\nNearest players:");
-            int n = 3;
+            int n = nearestNeighbors;
             foreach (var location in nearestPlayers)
             {
                 if (n-- == 0)
@@ -237,7 +249,7 @@ class Program
 
 public static void DisplayMap(IEnumerable<Location> playerLocations, Location myLocation, Location safestLocation)
 {
-    int gridSize = 25;
+    int gridSize = Program.mapSize;
     int mapSize = 500;
     char[,] map = new char[gridSize, gridSize];
 
