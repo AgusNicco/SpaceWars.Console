@@ -117,7 +117,7 @@ public class ApiService
    public Location FindLargestPlayerClusterCenter(IEnumerable<Location> playerLocations)
 {
     int mapSize = 500;
-    int quadrantSize = mapSize / 3;   // Divide the map into 3 parts along each axis
+    int quadrantSize = mapSize / 3; 
 
     // Initialize player count for each quadrant
     var quadrantCounts = new int[3, 3];
