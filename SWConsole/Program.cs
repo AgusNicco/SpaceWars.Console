@@ -5,8 +5,8 @@ namespace SpaceWarsServices;
 
 class Program
 {
-    public static Location myLocation {get; set;}
-    public static int myHeading {get; set;}
+    public static Location myLocation { get; set; }
+    public static int myHeading { get; set; }
     static async Task Main(string[] args)
     {
         //**************************************************************************************
@@ -45,8 +45,8 @@ class Program
 
             myLocation = joinGameResponse.StartingLocation;
             myHeading = joinGameResponse.Heading;
-        var response2 = service.GetNearestPlayers();
-        Console.WriteLine(response2);
+            var response2 = service.GetNearestPlayers();
+            Console.WriteLine(response2);
 
             Console.WriteLine($"Token:{joinGameResponse.Token}, Heading: {joinGameResponse.Heading}");
             Console.WriteLine($"Ship located at: {joinGameResponse.StartingLocation}, Game State is: {joinGameResponse.GameState}, Board Dimensions: {joinGameResponse.BoardWidth}, {joinGameResponse.BoardHeight}");
@@ -159,7 +159,7 @@ class Program
             Console.WriteLine($"Name: {username,-34} Token: {gameActions.Token}");
             Console.WriteLine($"Left: {leftKey,-12} Right: {rightKey,-12} Forward: {forwardKey,-12} Fire: {fireKey,-12} Clear Queue: {clearQueueKey,-12}");
             Console.WriteLine($"Info: {infoKey,-12}  Shop: {shopKey,-12}  Repair: {repairKey,-12} Read & Empty Messages: {readAndEmptyMessagesKey,-12}");
-             Console.WriteLine($"Aimbot: Z");
+            Console.WriteLine($"Aimbot: Z");
 
             for (int i = 0; i < gameActions.Weapons.Count; i++)
             {
@@ -183,7 +183,7 @@ class Program
                     Console.WriteLine($"{msg.Type,-30} {msg.Message}");
                 }
             }
-            
+
             Console.WriteLine(new string('=', Console.WindowWidth));
 
             var nearestPlayers = await service.GetNearestPlayers();
@@ -193,14 +193,95 @@ class Program
             Console.WriteLine($"My location: {myLocation.X}, {myLocation.Y}, Heading: {myHeading}");
             Console.WriteLine($"Safest location: {safestLocation.X}, {safestLocation.Y}");
             Console.WriteLine($"Most dangerous location: {mostDangerousLocation.X}, {mostDangerousLocation.Y}");
+            DisplayClustersMatrix(nearestPlayers);
+            DisplayMap(nearestPlayers);
             Console.WriteLine("\nNearest players:");
-            
+
+
             foreach (var location in nearestPlayers)
             {
                 Console.WriteLine($"Player at  {location.X}, {location.Y}");
             }
         }
     }
+
+    public static void DisplayClustersMatrix(IEnumerable<Location> playerLocations)
+    {
+        int mapSize = 500;
+        int quadrantSize = mapSize / 3;
+        int[,] quadrantCounts = new int[3, 3];
+
+
+        foreach (var location in playerLocations)
+        {
+            int xQuadrant = Math.Min(location.X / quadrantSize, 2);
+            int yQuadrant = Math.Min(location.Y / quadrantSize, 2);
+            quadrantCounts[xQuadrant, yQuadrant]++;
+        }
+
+
+        Console.WriteLine("Clusters Matrix:");
+        for (int y = 0; y < 3; y++)
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                Console.Write(quadrantCounts[x, y] + "\t");
+            }
+            Console.WriteLine(); // New line for each row
+        }
+    }
+    public static void DisplayMap(IEnumerable<Location> playerLocations)
+{
+    int gridSize = 25;
+    int mapSize = 500;
+    char[,] map = new char[gridSize, gridSize];
+
+    // Initialize the map
+    for (int y = 0; y < gridSize; y++)
+    {
+        for (int x = 0; x < gridSize; x++)
+        {
+            map[x, y] = '.';
+        }
+    }
+
+    // Calculate scale factors to fit the map into the 25x25 grid
+    double scaleX = mapSize / (double)gridSize;
+    double scaleY = mapSize / (double)gridSize;
+
+    // Mark player locations on the map
+    foreach (var location in playerLocations)
+    {
+        int gridX = (int)(location.X / scaleX);
+        int gridY = (int)(location.Y / scaleY);
+
+        // Ensure the position is within the bounds of the map grid
+        if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize)
+        {
+            map[gridX, gridY] = '*'; // Mark player location
+        }
+    }
+
+    // Mark your location with an X
+    int myGridX = (int)(myLocation.X / scaleX);
+    int myGridY = (int)(myLocation.Y / scaleY);
+
+    if (myGridX >= 0 && myGridX < gridSize && myGridY >= 0 && myGridY < gridSize)
+    {
+        map[myGridX, myGridY] = 'X'; // Mark your location
+    }
+
+    // Display the map
+    for (int y = 0; y < gridSize; y++)
+    {
+        for (int x = 0; x < gridSize; x++)
+        {
+            Console.Write(map[x, y] + " ");
+        }
+        Console.WriteLine();
+    }
+}
+
 
 
     private static Uri getApiBaseAddress(string[] args)
