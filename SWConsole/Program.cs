@@ -188,9 +188,11 @@ class Program
 
             var nearestPlayers = await service.GetNearestPlayers();
             var safestLocation = service.FindSafestLocation(nearestPlayers);
+            var mostDangerousLocation = service.FindLargestPlayerClusterCenter(nearestPlayers);
 
             Console.WriteLine($"My location: {myLocation.X}, {myLocation.Y}, Heading: {myHeading}");
             Console.WriteLine($"Safest location: {safestLocation.X}, {safestLocation.Y}");
+            Console.WriteLine($"Most dangerous location: {mostDangerousLocation.X}, {mostDangerousLocation.Y}");
             Console.WriteLine("\nNearest players:");
             
             foreach (var location in nearestPlayers)

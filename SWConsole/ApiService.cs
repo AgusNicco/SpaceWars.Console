@@ -114,6 +114,43 @@ public class ApiService
         return furthestCorner;
     }
 
+   public Location FindLargestPlayerClusterCenter(IEnumerable<Location> playerLocations)
+{
+    int mapSize = 500;
+    int quadrantSize = mapSize / 3; // Divide the map into 3 parts along each axis
+
+    // Initialize player count for each quadrant
+    var quadrantCounts = new int[3, 3];
+
+    foreach (var location in playerLocations)
+    {
+        int xQuadrant = Math.Min(location.X / quadrantSize, 2); // Ensure quadrant index is at most 2
+        int yQuadrant = Math.Min(location.Y / quadrantSize, 2); // Ensure quadrant index is at most 2
+        quadrantCounts[xQuadrant, yQuadrant]++;
+    }
+
+    // Find the quadrant with the highest player count
+    int maxCount = 0;
+    Location maxQuadrantCenter = new Location(0, 0);
+    for (int x = 0; x < 3; x++)
+    {
+        for (int y = 0; y < 3; y++)
+        {
+            if (quadrantCounts[x, y] > maxCount)
+            {
+                maxCount = quadrantCounts[x, y];
+                // Calculate the center of the quadrant
+                int centerX = (x * quadrantSize) + (quadrantSize / 2);
+                int centerY = (y * quadrantSize) + (quadrantSize / 2);
+                maxQuadrantCenter = new Location(centerX, centerY);
+            }
+        }
+    }
+
+    return maxQuadrantCenter;
+}
+
+
 
 
 
