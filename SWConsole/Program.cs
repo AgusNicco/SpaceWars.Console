@@ -182,6 +182,7 @@ class Program
                     Console.WriteLine($"{msg.Type,-30} {msg.Message}");
                 }
             }
+            
             Console.WriteLine(new string('=', Console.WindowWidth));
 
             var nearestPlayers = await service.GetNearestPlayers();
