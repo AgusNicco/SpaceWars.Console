@@ -121,7 +121,7 @@ public class GameActions
     {
         var messages = await apiService.ReadAndEmptyMessages();
         GameMessages.AddRange(messages);
-        //add weapons
+
         foreach (var weaponPurchaseMessage in messages.Where(m => m.Type == "SuccessfulWeaponPurchase"))
         {
             Weapons.Add(weaponPurchaseMessage.Message);

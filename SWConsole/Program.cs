@@ -196,10 +196,13 @@ class Program
             DisplayClustersMatrix(nearestPlayers);
             DisplayMap(nearestPlayers);
             Console.WriteLine("\nNearest players:");
-
-
+            int n = 3;
             foreach (var location in nearestPlayers)
             {
+                if (n-- == 0)
+                {
+                    break;
+                }
                 Console.WriteLine($"Player at  {location.X}, {location.Y}");
             }
         }
@@ -231,56 +234,59 @@ class Program
         }
     }
     public static void DisplayMap(IEnumerable<Location> playerLocations)
-{
-    int gridSize = 25;
-    int mapSize = 500;
-    char[,] map = new char[gridSize, gridSize];
-
-    // Initialize the map
-    for (int y = 0; y < gridSize; y++)
     {
-        for (int x = 0; x < gridSize; x++)
+        int gridSize = 25;
+        int mapSize = 500;
+        char[,] map = new char[gridSize, gridSize];
+
+        for (int y = 0; y < gridSize; y++)
         {
-            map[x, y] = '.';
+            for (int x = 0; x < gridSize; x++)
+            {
+                map[x, y] = '.';
+            }
+        }
+
+        double scaleX = mapSize / (double)gridSize;
+        double scaleY = mapSize / (double)gridSize;
+
+        foreach (var location in playerLocations)
+        {
+            int gridX = (int)(location.X / scaleX);
+            int gridY = (int)(location.Y / scaleY);
+
+            if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize)
+            {
+                map[gridX, gridY] = '*';
+            }
+        }
+
+        int myGridX = (int)(myLocation.X / scaleX);
+        int myGridY = (int)(myLocation.Y / scaleY);
+
+        if (myGridX >= 0 && myGridX < gridSize && myGridY >= 0 && myGridY < gridSize)
+        {
+            map[myGridX, myGridY] = 'X';
+        }
+
+        for (int y = 0; y < gridSize; y++)
+        {
+            for (int x = 0; x < gridSize; x++)
+            {
+                if (x == myGridX && y == myGridY)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                }
+                if (map[x, y] == 'X')
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(map[x, y] + " ");
+            }
+            Console.WriteLine();
         }
     }
-
-    // Calculate scale factors to fit the map into the 25x25 grid
-    double scaleX = mapSize / (double)gridSize;
-    double scaleY = mapSize / (double)gridSize;
-
-    // Mark player locations on the map
-    foreach (var location in playerLocations)
-    {
-        int gridX = (int)(location.X / scaleX);
-        int gridY = (int)(location.Y / scaleY);
-
-        // Ensure the position is within the bounds of the map grid
-        if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize)
-        {
-            map[gridX, gridY] = '*'; // Mark player location
-        }
-    }
-
-    // Mark your location with an X
-    int myGridX = (int)(myLocation.X / scaleX);
-    int myGridY = (int)(myLocation.Y / scaleY);
-
-    if (myGridX >= 0 && myGridX < gridSize && myGridY >= 0 && myGridY < gridSize)
-    {
-        map[myGridX, myGridY] = 'X'; // Mark your location
-    }
-
-    // Display the map
-    for (int y = 0; y < gridSize; y++)
-    {
-        for (int x = 0; x < gridSize; x++)
-        {
-            Console.Write(map[x, y] + " ");
-        }
-        Console.WriteLine();
-    }
-}
 
 
 

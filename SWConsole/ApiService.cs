@@ -81,7 +81,7 @@ public class ApiService
 
             var sortedLocations = otherPlayers
                 .OrderBy(p => Math.Sqrt(Math.Pow(p.X - Program.myLocation.X, 2) + Math.Pow(p.Y - Program.myLocation.Y, 2)))
-                .Take(20)
+                .Take(100)
                 .ToList();
 
             return sortedLocations;
