@@ -280,7 +280,8 @@ class Program
                 if (map[x, y] == 'X')
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                }
+                }  
+             
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(map[x, y] + " ");
             }
