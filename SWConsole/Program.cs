@@ -74,6 +74,7 @@ class Program
         gameActions.Weapons.Add("Basic Cannon");
         gameActions.CurrentWeapon = "Basic Cannon";
 
+
         while (!exitGame)
         {
             printStatus();
