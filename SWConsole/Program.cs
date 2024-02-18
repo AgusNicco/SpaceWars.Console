@@ -147,8 +147,8 @@ class Program
                 case var key when key == ConsoleKey.X:
                     await gameActions.FastForwardAsync();
                     break;
-                case ConsoleKey.N:
-                    //example
+                case ConsoleKey.Z:
+                    await gameActions.AimAtClosestPlayerAsync(service);
                     break;
             }
         }
@@ -159,6 +159,7 @@ class Program
             Console.WriteLine($"Name: {username,-34} Token: {gameActions.Token}");
             Console.WriteLine($"Left: {leftKey,-12} Right: {rightKey,-12} Forward: {forwardKey,-12} Fire: {fireKey,-12} Clear Queue: {clearQueueKey,-12}");
             Console.WriteLine($"Info: {infoKey,-12}  Shop: {shopKey,-12}  Repair: {repairKey,-12} Read & Empty Messages: {readAndEmptyMessagesKey,-12}");
+             Console.WriteLine($"Aimbot: Z");
 
             for (int i = 0; i < gameActions.Weapons.Count; i++)
             {
@@ -191,11 +192,11 @@ class Program
             Console.WriteLine($"My location: {myLocation.X}, {myLocation.Y}, Heading: {myHeading}");
             Console.WriteLine($"Safest location: {safestLocation.X}, {safestLocation.Y}");
             Console.WriteLine("\nNearest players:");
+            
             foreach (var location in nearestPlayers)
             {
                 Console.WriteLine($"Player at  {location.X}, {location.Y}");
             }
-
         }
     }
 

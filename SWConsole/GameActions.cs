@@ -34,6 +34,7 @@ public class GameActions
             _ => 0,//turn north if someone calls this with a bogus Direction
         };
         heading = ClampRotation(heading);
+        Program.myHeading = heading;
         await apiService.QueueAction([new("changeHeading", heading.ToString())]);
     }
 
@@ -45,10 +46,42 @@ public class GameActions
             (Direction.Left) => heading - 30,
             _ => 0,//turn north if someone calls this with a bogus Direction
         };
+
         heading = ClampRotation(heading);
+        Program.myHeading = heading;
         await apiService.QueueAction([new("changeHeading", heading.ToString())]);
     }
 
+    public async Task AimAtClosestPlayerAsync( ApiService service)
+    {
+        var nearbyPlayers = await service.GetNearestPlayers();
+        if (!nearbyPlayers.Any()) return; // Ensure there are players to aim at
+
+        // Find the closest player
+        var closestPlayer = nearbyPlayers[0];
+
+        // print closest player
+        Console.WriteLine($"Closest player is at {closestPlayer.X}, {closestPlayer.Y}");
+
+        // Calculate the angle to the closest player
+        int targetHeading = CalculateHeadingToTarget(Program.myLocation, closestPlayer);
+        Program.myHeading = targetHeading;
+
+        Console.WriteLine($"Aiming at {targetHeading} degrees");
+        Thread.Sleep(1000);
+        // Change the current heading to the target heading
+        await apiService.QueueAction([new QueueActionRequest("changeHeading", targetHeading.ToString())]);
+    }
+
+private int CalculateHeadingToTarget(Location myLocation, Location targetLocation)
+{
+    double deltaX = targetLocation.X - myLocation.X;
+    double deltaY = targetLocation.Y - myLocation.Y;
+    double targetAngleRadians = Math.Atan2(-deltaX, deltaY);
+    int targetAngleDegrees = (int)(targetAngleRadians * (180 / Math.PI));
+    targetAngleDegrees = (targetAngleDegrees + 360) % 360;
+    return targetAngleDegrees;
+}
 
 
 
