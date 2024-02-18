@@ -45,13 +45,14 @@ class Program
 
         Console.WriteLine("Enter yes, if you want to use the default settings, otherwise enter anything");
         var defaultSettings = Console.ReadLine();
+
         if (defaultSettings.ToLower() != "yes")
         {
             Console.WriteLine($"Enter the number of nearest neighbors you want displayed:");
             nearestNeighbors = int.Parse(Console.ReadLine());
             Console.WriteLine($"Enter the number of nearest neighbors used for calculation of centroid and clusters");
             nearestClust = int.Parse(Console.ReadLine());
-            Console.WriteLine($"Enter the number of nearest of quadrants used for the computation of the most dangerous location (the number must be a perfect square, sqrt(n) is an integer)");
+            Console.WriteLine($"Enter the number of quadrants used for the computation of the most dangerous location (the number must be a perfect square, sqrt(n) is an integer)");
             dangerousQuadrants = int.Parse(Console.ReadLine());
             Console.WriteLine($"Enter the size of the map (10-100)");
             mapSize = int.Parse(Console.ReadLine());
@@ -218,10 +219,13 @@ class Program
             var nearestPlayers = await service.GetNearestPlayers();
             var safestLocation = service.FindSafestLocation(nearestPlayers);
             var mostDangerousLocation = service.FindLargestPlayerClusterCenter(nearestPlayers);
+            var recommendedVictim = service.FindRecommendedVictim(nearestPlayers);
 
             Console.WriteLine($"My location: {myLocation.X}, {myLocation.Y}, Heading: {myHeading}");
             Console.WriteLine($"Safest location: {safestLocation.X}, {safestLocation.Y}");
             Console.WriteLine($"Most dangerous location: {mostDangerousLocation.X}, {mostDangerousLocation.Y}");
+            Console.WriteLine($"Recommended victim: {recommendedVictim.X}, {recommendedVictim.Y}");
+
             DisplayClustersMatrix(nearestPlayers);
             DisplayMap(nearestPlayers, myLocation, safestLocation);
             Console.WriteLine("\nNearest players:");

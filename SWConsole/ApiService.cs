@@ -114,42 +114,77 @@ public class ApiService
         return furthestCorner;
     }
 
- public Location FindLargestPlayerClusterCenter(IEnumerable<Location> playerLocations)
-{
-    int mapSize = 500;
-    // Calculate the number of quadrants per row and column
-    int quadrantsPerSide = (int)Math.Sqrt(Program.dangerousQuadrants);
-    int quadrantSize = mapSize / quadrantsPerSide;
-
-    var quadrantCounts = new int[quadrantsPerSide, quadrantsPerSide];
-
-    foreach (var location in playerLocations)
+    public Location FindRecommendedVictim(IEnumerable<Location> playerLocations)
     {
-        int xQuadrant = Math.Min(location.X / quadrantSize, quadrantsPerSide - 1);
-        int yQuadrant = Math.Min(location.Y / quadrantSize, quadrantsPerSide - 1);
-        quadrantCounts[xQuadrant, yQuadrant]++;
+
+        Dictionary<Location, double> closestDistances = new Dictionary<Location, double>();
+
+        foreach (var player in playerLocations)
+        {
+            double closestDistance = double.MaxValue;
+
+            foreach (var otherPlayer in playerLocations)
+            {
+                if (player != otherPlayer)
+                {
+                    double distance = CalculateDistance(player, otherPlayer);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                    }
+                }
+            }
+
+            closestDistances[player] = closestDistance;
+        }
+        var recommendedVictim = closestDistances.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+
+        return recommendedVictim;
     }
 
-    // Find the quadrant with the highest player count
-    int maxCount = 0;
-    Location maxQuadrantCenter = new Location(0, 0);
-    for (int x = 0; x < quadrantsPerSide; x++)
+    private double CalculateDistance(Location a, Location b)
     {
-        for (int y = 0; y < quadrantsPerSide; y++)
+        return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+    }
+
+
+    public Location FindLargestPlayerClusterCenter(IEnumerable<Location> playerLocations)
+    {
+        int mapSize = 500;
+
+        // Calculate the number of quadrants per row and column
+        int quadrantsPerSide = (int)Math.Sqrt(Program.dangerousQuadrants);
+        int quadrantSize = mapSize / quadrantsPerSide;
+
+        var quadrantCounts = new int[quadrantsPerSide, quadrantsPerSide];
+
+        foreach (var location in playerLocations)
         {
-            if (quadrantCounts[x, y] > maxCount)
+            int xQuadrant = Math.Min(location.X / quadrantSize, quadrantsPerSide - 1);
+            int yQuadrant = Math.Min(location.Y / quadrantSize, quadrantsPerSide - 1);
+            quadrantCounts[xQuadrant, yQuadrant]++;
+        }
+
+        // Find the quadrant with the highest player count
+        int maxCount = 0;
+        Location maxQuadrantCenter = new Location(0, 0);
+        for (int x = 0; x < quadrantsPerSide; x++)
+        {
+            for (int y = 0; y < quadrantsPerSide; y++)
             {
-                maxCount = quadrantCounts[x, y];
-                // Calculate the center of the quadrant
-                int centerX = (x * quadrantSize) + (quadrantSize / 2);
-                int centerY = (y * quadrantSize) + (quadrantSize / 2);
-                maxQuadrantCenter = new Location(centerX, centerY);
+                if (quadrantCounts[x, y] > maxCount)
+                {
+                    maxCount = quadrantCounts[x, y];
+                    // Calculate the center of the quadrant
+                    int centerX = (x * quadrantSize) + (quadrantSize / 2);
+                    int centerY = (y * quadrantSize) + (quadrantSize / 2);
+                    maxQuadrantCenter = new Location(centerX, centerY);
+                }
             }
         }
-    }
 
-    return maxQuadrantCenter;
-}
+        return maxQuadrantCenter;
+    }
 
 
 
