@@ -12,7 +12,7 @@ class Program
     public static int nearestNeighbors { get; set; }
     public static int nearestClust { get; set; }
     public static int dangerousQuadrants { get; set; }
-    
+
     static async Task Main(string[] args)
     {
         //**************************************************************************************
@@ -42,14 +42,27 @@ class Program
 
         Console.WriteLine("Please enter your name");
         var username = Console.ReadLine();
-        Console.WriteLine($"Enter the number of nearest neighbors you want displayed:");
-        nearestNeighbors = int.Parse(Console.ReadLine());
-        Console.WriteLine($"Enter the number of nearest neighbors used for calculation of centroid and clusters");
-        nearestClust = int.Parse(Console.ReadLine());
-        Console.WriteLine($"Enter the number of nearest of quadrants used for the computation of the most dangerous location (the number must be a perfect square, sqrt(n) is an integer)");
-        dangerousQuadrants = int.Parse(Console.ReadLine());
-        Console.WriteLine($"Enter the size of the map (10-100)");
-        mapSize = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Enter yes, if you want to use the default settings, otherwise enter anything");
+        var defaultSettings = Console.ReadLine();
+        if (defaultSettings.ToLower() != "yes")
+        {
+            Console.WriteLine($"Enter the number of nearest neighbors you want displayed:");
+            nearestNeighbors = int.Parse(Console.ReadLine());
+            Console.WriteLine($"Enter the number of nearest neighbors used for calculation of centroid and clusters");
+            nearestClust = int.Parse(Console.ReadLine());
+            Console.WriteLine($"Enter the number of nearest of quadrants used for the computation of the most dangerous location (the number must be a perfect square, sqrt(n) is an integer)");
+            dangerousQuadrants = int.Parse(Console.ReadLine());
+            Console.WriteLine($"Enter the size of the map (10-100)");
+            mapSize = int.Parse(Console.ReadLine());
+        }
+        else
+        {
+            nearestNeighbors = 10;
+            nearestClust = 100;
+            dangerousQuadrants = 9;
+            mapSize = 50;
+        }
 
         try
         {
@@ -246,82 +259,82 @@ class Program
             {
                 Console.Write(quadrantCounts[x, y] + "\t");
             }
-            Console.WriteLine(); 
+            Console.WriteLine();
         }
     }
 
 
-public static void DisplayMap(IEnumerable<Location> playerLocations, Location myLocation, Location safestLocation)
-{
-    int gridSize = Program.mapSize;
-    int mapSize = 500;
-    char[,] map = new char[gridSize, gridSize];
-
-    for (int y = 0; y < gridSize; y++)
+    public static void DisplayMap(IEnumerable<Location> playerLocations, Location myLocation, Location safestLocation)
     {
-        for (int x = 0; x < gridSize; x++)
+        int gridSize = Program.mapSize;
+        int mapSize = 500;
+        char[,] map = new char[gridSize, gridSize];
+
+        for (int y = 0; y < gridSize; y++)
         {
-            map[x, y] = '.';
+            for (int x = 0; x < gridSize; x++)
+            {
+                map[x, y] = '.';
+            }
         }
-    }
 
-    double scaleX = mapSize / (double)gridSize;
-    double scaleY = mapSize / (double)gridSize;
+        double scaleX = mapSize / (double)gridSize;
+        double scaleY = mapSize / (double)gridSize;
 
 
-    foreach (var location in playerLocations)
-    {
-        int gridX = (int)(location.X / scaleX);
-        int gridY = (int)(location.Y / scaleY);
-
-        if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize)
+        foreach (var location in playerLocations)
         {
-            map[gridX, gridY] = 'X';
+            int gridX = (int)(location.X / scaleX);
+            int gridY = (int)(location.Y / scaleY);
+
+            if (gridX >= 0 && gridX < gridSize && gridY >= 0 && gridY < gridSize)
+            {
+                map[gridX, gridY] = 'X';
+            }
         }
-    }
 
-    int myGridX = (int)(myLocation.X / scaleX);
-    int myGridY = (int)(myLocation.Y / scaleY);
+        int myGridX = (int)(myLocation.X / scaleX);
+        int myGridY = (int)(myLocation.Y / scaleY);
 
-    if (myGridX >= 0 && myGridX < gridSize && myGridY >= 0 && myGridY < gridSize)
-    {
-        map[myGridX, myGridY] = '*';
-    }
-
-    int safeGridX = (int)(safestLocation.X / scaleX);
-    int safeGridY = (int)(safestLocation.Y / scaleY);
-
-    if (safeGridX >= 0 && safeGridX < gridSize && safeGridY >= 0 && safeGridY < gridSize)
-    {
-        map[safeGridX, safeGridY] = 'S';
-    }
-
-    for (int y = 0; y < gridSize; y++)
-    {
-        for (int x = 0; x < gridSize; x++)
+        if (myGridX >= 0 && myGridX < gridSize && myGridY >= 0 && myGridY < gridSize)
         {
-            if (map[x, y] == '*')
-            {
-                Console.ForegroundColor = ConsoleColor.Green; // My location
-            }
-            else if (map[x, y] == 'X')
-            {
-                Console.ForegroundColor = ConsoleColor.Red; // Player locations
-            }
-            else if (map[x, y] == 'S')
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow; // Safest location
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.White; // Empty spaces
-            }
-            Console.Write(map[x, y] + " ");
+            map[myGridX, myGridY] = '*';
         }
-        Console.WriteLine();
+
+        int safeGridX = (int)(safestLocation.X / scaleX);
+        int safeGridY = (int)(safestLocation.Y / scaleY);
+
+        if (safeGridX >= 0 && safeGridX < gridSize && safeGridY >= 0 && safeGridY < gridSize)
+        {
+            map[safeGridX, safeGridY] = 'S';
+        }
+
+        for (int y = 0; y < gridSize; y++)
+        {
+            for (int x = 0; x < gridSize; x++)
+            {
+                if (map[x, y] == '*')
+                {
+                    Console.ForegroundColor = ConsoleColor.Green; // My location
+                }
+                else if (map[x, y] == 'X')
+                {
+                    Console.ForegroundColor = ConsoleColor.Red; // Player locations
+                }
+                else if (map[x, y] == 'S')
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow; // Safest location
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.White; // Empty spaces
+                }
+                Console.Write(map[x, y] + " ");
+            }
+            Console.WriteLine();
+        }
+        Console.ResetColor();
     }
-    Console.ResetColor(); 
-}
 
 
 
