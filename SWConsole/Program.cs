@@ -185,6 +185,7 @@ class Program
             Console.WriteLine(new string('=', Console.WindowWidth));
 
             var nearestPlayers = await service.GetNearestPlayers();
+            Console.WriteLine($"My location: {myLocation.X}, {myLocation.Y}, Heading: {myHeading}");
             Console.WriteLine("\nNearest players:");
             foreach (var location in nearestPlayers)
             {
