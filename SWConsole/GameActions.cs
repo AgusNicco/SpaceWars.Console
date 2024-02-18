@@ -49,17 +49,29 @@ public class GameActions
         await apiService.QueueAction([new("changeHeading", heading.ToString())]);
     }
 
+
+
+
     public async Task MoveForwardAsync(bool lightSpeed)
     {
+        double distance = lightSpeed ? 10 : 1;
+        double radians = Math.PI * Program.myHeading / 180.0;
+
+        int deltaX = (int)Math.Round(distance * Math.Sin(radians));
+        int deltaY = (int)Math.Round(distance * Math.Cos(radians));
+
+        Program.myLocation = new Location(Program.myLocation.X + deltaX, Program.myLocation.Y + deltaY);
+
         heading = ClampRotation(heading);
         var actions = Enumerable.Range(0, lightSpeed ? 10 : 1)
                 .Select(n => new QueueActionRequest("move", heading.ToString()));
         await apiService.QueueAction(actions);
     }
 
+
     public async Task FastForwardAsync()
     {
-        var fastForwardDistance = 5; 
+        var fastForwardDistance = 5;
         var actions = Enumerable.Range(0, fastForwardDistance)
                 .Select(n => new QueueActionRequest("move", heading.ToString()));
         await apiService.QueueAction(actions);

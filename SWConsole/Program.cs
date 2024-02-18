@@ -5,6 +5,8 @@ namespace SpaceWarsServices;
 
 class Program
 {
+    public static Location myLocation {get; set;}
+    public static int myHeading {get; set;}
     static async Task Main(string[] args)
     {
         //**************************************************************************************
@@ -31,6 +33,7 @@ class Program
         List<PurchasableItem> Shop = new List<PurchasableItem>();
         JoinGameResponse joinGameResponse = null;
 
+
         Console.WriteLine("Please enter your name");
         var username = Console.ReadLine();
         try
@@ -39,6 +42,11 @@ class Program
             token = joinGameResponse.Token;
 
             Shop = joinGameResponse.Shop.Select(item => new PurchasableItem(item.Cost, item.Name, item.Prerequisites)).ToList();
+
+            myLocation = joinGameResponse.StartingLocation;
+            myHeading = joinGameResponse.Heading;
+        var response2 = service.GetNearestPlayers();
+        Console.WriteLine(response2);
 
             Console.WriteLine($"Token:{joinGameResponse.Token}, Heading: {joinGameResponse.Heading}");
             Console.WriteLine($"Ship located at: {joinGameResponse.StartingLocation}, Game State is: {joinGameResponse.GameState}, Board Dimensions: {joinGameResponse.BoardWidth}, {joinGameResponse.BoardHeight}");
@@ -70,24 +78,6 @@ class Program
                     break;
                 case var key when key == rightKey:
                     await gameActions.RotateRightAsync(shiftPressed);
-                    break;
-                case var key when key == ConsoleKey.W:
-                    await gameActions.MoveForwardAsync(shiftPressed);
-                    break;
-                case var key when key == ConsoleKey.A:
-                    await gameActions.RotateLeftAsync(shiftPressed);
-                    break;
-                case var key when key == ConsoleKey.D:
-                    await gameActions.RotateRightAsync(shiftPressed);
-                    break;
-                case var key when key == ConsoleKey.Q:
-                    await gameActions.Rotate30LeftAsync();
-                    break;
-                case var key when key == ConsoleKey.E:
-                    await gameActions.Rotate30RightAsync();
-                    break;
-                case var key when key == ConsoleKey.X:
-                    await gameActions.FastForwardAsync();
                     break;
                 case var key when key == fireKey:
                     await gameActions.FireWeaponAsync();
@@ -139,13 +129,31 @@ class Program
                 //***  |    |    |    |       Add any other custom keys here       |    |    |    |    |
                 //***  V    V    V    V                                            V    V    V    V    V
                 //**************************************************************************************
+                case var key when key == ConsoleKey.W:
+                    await gameActions.MoveForwardAsync(shiftPressed);
+                    break;
+                case var key when key == ConsoleKey.A:
+                    await gameActions.RotateLeftAsync(shiftPressed);
+                    break;
+                case var key when key == ConsoleKey.D:
+                    await gameActions.RotateRightAsync(shiftPressed);
+                    break;
+                case var key when key == ConsoleKey.Q:
+                    await gameActions.Rotate30LeftAsync();
+                    break;
+                case var key when key == ConsoleKey.E:
+                    await gameActions.Rotate30RightAsync();
+                    break;
+                case var key when key == ConsoleKey.X:
+                    await gameActions.FastForwardAsync();
+                    break;
                 case ConsoleKey.N:
                     //example
                     break;
             }
         }
 
-        void printStatus()
+        async void printStatus()
         {
             Console.Clear();
             Console.WriteLine($"Name: {username,-34} Token: {gameActions.Token}");
@@ -175,6 +183,14 @@ class Program
                 }
             }
             Console.WriteLine(new string('=', Console.WindowWidth));
+
+            var nearestPlayers = await service.GetNearestPlayers();
+            Console.WriteLine("\nNearest players:");
+            foreach (var location in nearestPlayers)
+            {
+                Console.WriteLine($"Player at  {location.X}, {location.Y}");
+            }
+
         }
     }
 
