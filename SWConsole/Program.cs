@@ -186,7 +186,10 @@ class Program
             Console.WriteLine(new string('=', Console.WindowWidth));
 
             var nearestPlayers = await service.GetNearestPlayers();
+            var safestLocation = service.FindSafestLocation(nearestPlayers);
+
             Console.WriteLine($"My location: {myLocation.X}, {myLocation.Y}, Heading: {myHeading}");
+            Console.WriteLine($"Safest location: {safestLocation.X}, {safestLocation.Y}");
             Console.WriteLine("\nNearest players:");
             foreach (var location in nearestPlayers)
             {

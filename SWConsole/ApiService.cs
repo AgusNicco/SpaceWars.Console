@@ -59,39 +59,61 @@ public class ApiService
     }
     //
 
-public async Task<List<Location>> GetNearestPlayers()
-{
-    try
+    public async Task<List<Location>> GetNearestPlayers()
     {
-        var response = await _httpClient.GetAsync($"/game/state");
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            var response = await _httpClient.GetAsync($"/game/state");
+            response.EnsureSuccessStatusCode();
 
-        var content = await response.Content.ReadAsStringAsync();
-        var gameState = JsonConvert.DeserializeObject<GameStateResponse>(content);
+            var content = await response.Content.ReadAsStringAsync();
+            var gameState = JsonConvert.DeserializeObject<GameStateResponse>(content);
 
-        var closestToMe = gameState.PlayerLocations
-            .OrderBy(p => Math.Pow(p.X - Program.myLocation.X, 2) + Math.Pow(p.Y - Program.myLocation.Y, 2))
+            var closestToMe = gameState.PlayerLocations
+                .OrderBy(p => Math.Pow(p.X - Program.myLocation.X, 2) + Math.Pow(p.Y - Program.myLocation.Y, 2))
+                .First();
+
+            Program.myLocation = closestToMe;
+
+            var otherPlayers = gameState.PlayerLocations
+                .Where(p => p.X != Program.myLocation.X || p.Y != Program.myLocation.Y)
+                .ToList();
+
+            var sortedLocations = otherPlayers
+                .OrderBy(p => Math.Sqrt(Math.Pow(p.X - Program.myLocation.X, 2) + Math.Pow(p.Y - Program.myLocation.Y, 2)))
+                .Take(20)
+                .ToList();
+
+            return sortedLocations;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            throw;
+        }
+    }
+
+    public Location FindSafestLocation(IEnumerable<Location> enemyLocations)
+    {
+        // Calculate centroid of enemy locations
+        var centroidX = enemyLocations.Average(loc => loc.X);
+        var centroidY = enemyLocations.Average(loc => loc.Y);
+
+        var mapCorners = new List<Location>
+        {
+        new Location(0, 0),
+        new Location(0, 500),
+        new Location(500, 0),
+        new Location(500, 500)
+        };
+
+        var furthestCorner = mapCorners
+            .OrderByDescending(corner => Math.Sqrt(Math.Pow(corner.X - centroidX, 2) + Math.Pow(corner.Y - centroidY, 2)))
             .First();
 
-        Program.myLocation = closestToMe;
-
-        var otherPlayers = gameState.PlayerLocations
-            .Where(p => p.X != Program.myLocation.X || p.Y != Program.myLocation.Y)
-            .ToList();
-
-        var sortedLocations = otherPlayers
-            .OrderBy(p => Math.Sqrt(Math.Pow(p.X - Program.myLocation.X, 2) + Math.Pow(p.Y - Program.myLocation.Y, 2)))
-            .Take(20) 
-            .ToList();
-
-        return sortedLocations;
+        return furthestCorner;
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error: {ex.Message}");
-        throw;
-    }
-}
+
 
 
 
