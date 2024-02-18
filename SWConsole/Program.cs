@@ -11,6 +11,7 @@ class Program
     public static int mapSize { get; set; }
     public static int nearestNeighbors { get; set; }
     public static int nearestClust { get; set; }
+    public static int dangerousQuadrants { get; set; }
     
     static async Task Main(string[] args)
     {
@@ -45,6 +46,8 @@ class Program
         nearestNeighbors = int.Parse(Console.ReadLine());
         Console.WriteLine($"Enter the number of nearest neighbors used for calculation of centroid and clusters");
         nearestClust = int.Parse(Console.ReadLine());
+        Console.WriteLine($"Enter the number of nearest of quadrants used for the computation of the most dangerous location (the number must be a perfect square, sqrt(n) is an integer)");
+        dangerousQuadrants = int.Parse(Console.ReadLine());
         Console.WriteLine($"Enter the size of the map (10-100)");
         mapSize = int.Parse(Console.ReadLine());
 
