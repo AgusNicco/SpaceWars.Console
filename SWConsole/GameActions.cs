@@ -73,7 +73,8 @@ public class GameActions
         int target_y = targetLocation.X;
 
         double angle = Math.Atan2(target_y - my_y, target_x - my_x);
-        return (int)(angle * (180 / Math.PI));
+        int degrees = (int)(angle * (180 / Math.PI));
+        return ClampRotation(degrees);
         
         double deltaX = targetLocation.X - myLocation.X;
         double deltaY = targetLocation.Y - myLocation.Y;
@@ -94,6 +95,7 @@ public class GameActions
 
         Program.myLocation = new Location(Program.myLocation.X + deltaX, Program.myLocation.Y + deltaY);
 
+        heading = Program.myHeading;
         heading = ClampRotation(heading);
         var actions = Enumerable.Range(0, lightSpeed ? 10 : 1)
                 .Select(n => new QueueActionRequest("move", heading.ToString()));
@@ -103,6 +105,7 @@ public class GameActions
 
     public async Task FastForwardAsync()
     {
+        heading = Program.myHeading;
         var fastForwardDistance = 5;
         var actions = Enumerable.Range(0, fastForwardDistance)
                 .Select(n => new QueueActionRequest("move", heading.ToString()));

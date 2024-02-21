@@ -62,7 +62,7 @@ class Program
             nearestNeighbors = 10;
             nearestClust = 100;
             dangerousQuadrants = 9;
-            mapSize = 50;
+            mapSize = 60;
         }
 
         try
@@ -97,25 +97,30 @@ class Program
             printStatus();
             ConsoleKeyInfo keyInfo = Console.ReadKey(true); // Read key without displaying it
             bool shiftPressed = keyInfo.Modifiers.HasFlag(ConsoleModifiers.Shift);
-
+            int delay = 100;    
             switch (keyInfo.Key)
             {
                 case var key when key == forwardKey:
+                    Thread.Sleep(delay);
                     await gameActions.MoveForwardAsync(shiftPressed);
                     break;
                 case var key when key == leftKey:
+                    Thread.Sleep(delay);
                     await gameActions.RotateLeftAsync(shiftPressed);
                     break;
                 case var key when key == rightKey:
+                    Thread.Sleep(delay);
                     await gameActions.RotateRightAsync(shiftPressed);
                     break;
                 case var key when key == fireKey:
+                    Thread.Sleep(delay);
                     await gameActions.FireWeaponAsync();
                     break;
                 case var key when key == clearQueueKey:
                     await gameActions.ClearQueueAsync();
                     break;
                 case var key when key == repairKey:
+                    Thread.Sleep(delay);
                     await gameActions.RepairShipAsync();
                     Console.WriteLine("Ship repair requested.");
                     break;
@@ -302,7 +307,7 @@ class Program
 
         if (myGridX >= 0 && myGridX < gridSize && myGridY >= 0 && myGridY < gridSize)
         {
-            map[myGridX, myGridY] = '*';
+            map[myGridX, myGridY] = 'O';
         }
 
         int safeGridX = (int)(safestLocation.X / scaleX);
@@ -317,7 +322,7 @@ class Program
         {
             for (int x = 0; x < gridSize; x++)
             {
-                if (map[x, y] == '*')
+                if (map[x, y] == 'O')
                 {
                     Console.ForegroundColor = ConsoleColor.Green; // My location
                 }
