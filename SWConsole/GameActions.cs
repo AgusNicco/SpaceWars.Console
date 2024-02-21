@@ -67,6 +67,14 @@ public class GameActions
 
     private int CalculateHeadingToTarget(Location myLocation, Location targetLocation)
     {
+        int my_x = myLocation.Y;
+        int my_y = myLocation.X;
+        int target_x = targetLocation.Y;
+        int target_y = targetLocation.X;
+
+        double angle = Math.Atan2(target_y - my_y, target_x - my_x);
+        return (int)(angle * (180 / Math.PI));
+        
         double deltaX = targetLocation.X - myLocation.X;
         double deltaY = targetLocation.Y - myLocation.Y;
         double targetAngleRadians = Math.Atan2(-deltaX, deltaY);
